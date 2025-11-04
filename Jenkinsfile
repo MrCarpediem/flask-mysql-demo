@@ -1,4 +1,3 @@
-cat > Jenkinsfile << 'EOF'
 pipeline {
   agent any
 
@@ -65,6 +64,22 @@ pipeline {
         }
       }
     }
+
+    // 🚀 NEW STAGE — Deploy latest image
+    stage('Deploy Container') {
+      steps {
+        sh '''
+          echo "🧱 Stopping existing container..."
+          docker rm -f flask_mysql_demo || true
+
+          echo "📦 Pulling latest image from Docker Hub..."
+          docker pull mrcarpediem/flask-mysql-demo:latest
+
+          echo "🚀 Starting the new container..."
+          docker run -d --name flask_mysql_demo -p 5000:5000 mrcarpediem/flask-mysql-demo:latest
+        '''
+      }
+    }
   }
 
   post {
@@ -73,4 +88,3 @@ pipeline {
     }
   }
 }
-EOF
